@@ -31,6 +31,7 @@ namespace Business.Concrete
         }
         [SecuredOperation("product.add")]
         [ValidationAspect(typeof(ProductValidator))]
+        [CacheRemoveAspect("IProductService.Get")]
         public IResult Add(Product product)
         {
             //business codes
@@ -110,6 +111,19 @@ namespace Business.Concrete
                 return new ErrorResult(Messages.CategoryLimitExceted);
             }
             return new SuccessResult();
+        }
+
+        //[TransactionScopeAspect]
+        public IResult AddTransactionalTest(Product product)
+        {
+            Add(product);
+            if (product.UnitPrice < 10)
+            {
+                throw new Exception("");
+            }
+
+            Add(product);
+            return null;
         }
     }
 }
